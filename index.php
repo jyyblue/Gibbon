@@ -752,7 +752,6 @@ if ($page['showSidebar']) {
     ]);
 }
 
-
 /**
  * DONE!!
  */
