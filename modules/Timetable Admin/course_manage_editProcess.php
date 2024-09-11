@@ -63,7 +63,8 @@ if (isActionAccessible($guid, $connection2, '/modules/Timetable Admin/course_man
             $map = $_POST['map'] ?? '';
             $gibbonSchoolYearID = $_POST['gibbonSchoolYearID'] ?? '';
             $gibbonYearGroupIDList = implode(',', $_POST['gibbonYearGroupIDList'] ?? []);
-
+            $gibbonSchoolYearTermIDList = implode(',', $_POST['gibbonSchoolYearTermIDList'] ?? []);
+            
             if ($name == '' or $nameShort == '' or $gibbonSchoolYearID == '' or $map == '') {
                 $URL .= '&return=error3';
                 header("Location: {$URL}");
@@ -95,8 +96,8 @@ if (isActionAccessible($guid, $connection2, '/modules/Timetable Admin/course_man
                 } else {
                     //Write to database
                     try {
-                        $data = array('gibbonDepartmentID' => $gibbonDepartmentID, 'name' => $name, 'nameShort' => $nameShort, 'orderBy' => $orderBy, 'description' => $description, 'map' => $map, 'gibbonYearGroupIDList' => $gibbonYearGroupIDList, 'fields' => $fields, 'gibbonCourseID' => $gibbonCourseID);
-                        $sql = 'UPDATE gibbonCourse SET gibbonDepartmentID=:gibbonDepartmentID, name=:name, nameShort=:nameShort, orderBy=:orderBy, description=:description, map=:map, gibbonYearGroupIDList=:gibbonYearGroupIDList, fields=:fields WHERE gibbonCourseID=:gibbonCourseID';
+                        $data = array('gibbonDepartmentID' => $gibbonDepartmentID, 'name' => $name, 'nameShort' => $nameShort, 'orderBy' => $orderBy, 'description' => $description, 'map' => $map, 'gibbonYearGroupIDList' => $gibbonYearGroupIDList, 'gibbonSchoolYearTermIDList' => $gibbonSchoolYearTermIDList, 'fields' => $fields, 'gibbonCourseID' => $gibbonCourseID);
+                        $sql = 'UPDATE gibbonCourse SET gibbonDepartmentID=:gibbonDepartmentID, name=:name, nameShort=:nameShort, orderBy=:orderBy, description=:description, map=:map, gibbonYearGroupIDList=:gibbonYearGroupIDList, gibbonSchoolYearTermIDList=:gibbonSchoolYearTermIDList, fields=:fields WHERE gibbonCourseID=:gibbonCourseID';
                         $result = $connection2->prepare($sql);
                         $result->execute($data);
                     } catch (PDOException $e) {

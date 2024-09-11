@@ -110,8 +110,12 @@ if (isActionAccessible($guid, $connection2, '/modules/Timetable Admin/course_man
 
 			$row = $form->addRow();
 				$row->addLabel('gibbonYearGroupIDList', __('Year Groups'))->description(__('Enrolable year groups.'));
-				$row->addCheckboxYearGroup('gibbonYearGroupIDList');
-			
+				$row->addCheckboxYearGroup('gibbonYearGroupIDList')->required();
+
+            $row = $form->addRow();
+            $row->addLabel('gibbonSchoolYearTermIDList', __('Terms'))->description(__('Terms in which the course will run.'));
+            $row->addCheckboxSchoolYearTerm('gibbonSchoolYearTermIDList', $session->get('gibbonSchoolYearID'))->checkAll()->required();
+
             // Custom Fields
             $container->get(CustomFieldHandler::class)->addCustomFieldsToForm($form, 'Course', []);
 

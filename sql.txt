@@ -1,0 +1,1 @@
+ALTER TABLE `gibboncourse` ADD COLUMN `gibbonSchoolYearTermIDList` TEXT NOT NULL AFTER `gibbonYearGroupIDList`; 

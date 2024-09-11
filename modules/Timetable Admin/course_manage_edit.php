@@ -67,7 +67,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Timetable Admin/course_man
     } else {
 
             $data = array('gibbonCourseID' => $gibbonCourseID);
-            $sql = 'SELECT gibbonCourseID, gibbonDepartmentID, gibbonCourse.name AS name, gibbonCourse.nameShort as nameShort, orderBy, gibbonCourse.description, gibbonCourse.map, gibbonCourse.gibbonSchoolYearID, gibbonSchoolYear.name as yearName, gibbonYearGroupIDList, gibbonCourse.fields FROM gibbonCourse, gibbonSchoolYear WHERE gibbonCourse.gibbonSchoolYearID=gibbonSchoolYear.gibbonSchoolYearID AND gibbonCourseID=:gibbonCourseID';
+            $sql = 'SELECT gibbonCourseID, gibbonDepartmentID, gibbonCourse.name AS name, gibbonCourse.nameShort as nameShort, orderBy, gibbonCourse.description, gibbonCourse.map, gibbonCourse.gibbonSchoolYearID, gibbonSchoolYear.name as yearName, gibbonYearGroupIDList, gibbonSchoolYearTermIDList, gibbonCourse.fields FROM gibbonCourse, gibbonSchoolYear WHERE gibbonCourse.gibbonSchoolYearID=gibbonSchoolYear.gibbonSchoolYearID AND gibbonCourseID=:gibbonCourseID';
             $result = $connection2->prepare($sql);
             $result->execute($data);
 
@@ -121,7 +121,11 @@ if (isActionAccessible($guid, $connection2, '/modules/Timetable Admin/course_man
 
 			$row = $form->addRow();
 				$row->addLabel('gibbonYearGroupIDList', __('Year Groups'))->description(__('Enrolable year groups.'));
-				$row->addCheckboxYearGroup('gibbonYearGroupIDList')->loadFromCSV($values);
+				$row->addCheckboxYearGroup('gibbonYearGroupIDList')->loadFromCSV($values)->required();
+
+            $row = $form->addRow();
+            $row->addLabel('gibbonSchoolYearTermIDList', __('Terms'))->description(__('Terms in which the course will run.'));
+            $row->addCheckboxSchoolYearTerm('gibbonSchoolYearTermIDList', $session->get('gibbonSchoolYearID'))->loadFromCSV($values)->required();
 
             // Custom Fields
             $container->get(CustomFieldHandler::class)->addCustomFieldsToForm($form, 'Course', [], $values['fields']);
