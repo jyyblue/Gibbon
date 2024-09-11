@@ -223,7 +223,6 @@ if (isActionAccessible($guid, $connection2, '/modules/Planner/planner_add.php') 
                 }
             }
 
-            $dateValue = $date;
             if ($viewBy == 'date') {
                 $row = $form->addRow();
                     $row->addLabel('date', __('Date'));
@@ -233,7 +232,6 @@ if (isActionAccessible($guid, $connection2, '/modules/Planner/planner_add.php') 
                 $row = $form->addRow();
                     $row->addLabel('date', __('Date'));
                     $row->addDate('date')->setValue(Format::date($nextDate))->required();
-                    $dateValue = $nextDate;
             }
 
             $nextTimeStart = (isset($nextTimeStart)) ? substr($nextTimeStart, 0, 5) : null;
@@ -394,13 +392,8 @@ if (isActionAccessible($guid, $connection2, '/modules/Planner/planner_add.php') 
 
             $formData = $container->get(FormSessionStorage::class);
             $formData->load('plannerAdd');
-
-            $_formData = $formData->getData();
-            $_formData['date'] = $dateValue;
-            $_formData['timeStart'] = $nextTimeStart;
-            $_formData['timeEnd'] = $nextTimeEnd;
             
-            $form->loadAllValuesFrom($_formData);
+            $form->loadAllValuesFrom($formData->getData());
             $form->enableAutoSave($formId, $autoSaveUrl);
 
             echo $form->getOutput();

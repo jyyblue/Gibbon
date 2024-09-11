@@ -172,7 +172,6 @@ if (isActionAccessible($guid, $connection2, '/modules/Timetable Admin/course_man
                 });
 
             $table->addColumn('reportable', __('Reportable'))->format(Format::using('yesNo', 'reportable'));
-            $table->addColumn('countColumn', __('Columns'));
 
             // ACTIONS
             $table->addActionColumn()
@@ -190,9 +189,6 @@ if (isActionAccessible($guid, $connection2, '/modules/Timetable Admin/course_man
                     $actions->addAction('enrolment', __('Enrolment'))
                         ->setIcon('attendance')
                         ->setURL('/modules/Timetable Admin/courseEnrolment_manage_class_edit.php');
-                    $actions->addAction('timeslot', __('Time Slot'))
-                        ->setIcon('markbook')
-                        ->setURL('/modules/Timetable Admin/course_ts_manage_class_edit.php');
                 });
 
             echo $table->render($classes->toDataSet());

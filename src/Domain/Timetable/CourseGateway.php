@@ -111,7 +111,7 @@ class CourseGateway extends QueryableGateway
     public function selectClassesByCourseID($gibbonCourseID)
     {
         $data = array('gibbonCourseID' => $gibbonCourseID, 'today' => date('Y-m-d'));
-        $sql = "SELECT gibbonCourseClass.*, COUNT(CASE WHEN gibbonPerson.status='Full' AND gibbonCourseClassPerson.role='Student' AND (gibbonPerson.dateStart IS NULL OR gibbonPerson.dateStart<:today) AND (gibbonPerson.dateEnd IS NULL OR gibbonPerson.dateEnd>=:today) THEN gibbonPerson.status END) as studentsActive, COUNT(CASE WHEN (gibbonPerson.status='Expected' OR gibbonPerson.dateStart>=:today) AND gibbonCourseClassPerson.role='Student' THEN gibbonPerson.status END) as studentsExpected, COUNT(DISTINCT CASE WHEN (gibbonPerson.status='Full' OR gibbonPerson.status='Expected') AND gibbonCourseClassPerson.role='Student' AND (gibbonPerson.dateEnd IS NULL OR gibbonPerson.dateEnd>=:today) THEN gibbonPerson.gibbonPersonID END) as studentsTotal, COUNT(DISTINCT CASE WHEN gibbonCourseClassPerson.role='Teacher' AND (gibbonPerson.status='Full' OR gibbonPerson.status='Expected') THEN gibbonPerson.gibbonPersonID END) as teachersTotal, (select count(*) from gibbonClassColumn where gibbonClassColumn.`gibbonCourseClassID`=gibbonCourseClass.`gibbonCourseClassID`) as countColumn  
+        $sql = "SELECT gibbonCourseClass.*, COUNT(CASE WHEN gibbonPerson.status='Full' AND gibbonCourseClassPerson.role='Student' AND (gibbonPerson.dateStart IS NULL OR gibbonPerson.dateStart<:today) AND (gibbonPerson.dateEnd IS NULL OR gibbonPerson.dateEnd>=:today) THEN gibbonPerson.status END) as studentsActive, COUNT(CASE WHEN (gibbonPerson.status='Expected' OR gibbonPerson.dateStart>=:today) AND gibbonCourseClassPerson.role='Student' THEN gibbonPerson.status END) as studentsExpected, COUNT(DISTINCT CASE WHEN (gibbonPerson.status='Full' OR gibbonPerson.status='Expected') AND gibbonCourseClassPerson.role='Student' AND (gibbonPerson.dateEnd IS NULL OR gibbonPerson.dateEnd>=:today) THEN gibbonPerson.gibbonPersonID END) as studentsTotal, COUNT(DISTINCT CASE WHEN gibbonCourseClassPerson.role='Teacher' AND (gibbonPerson.status='Full' OR gibbonPerson.status='Expected') THEN gibbonPerson.gibbonPersonID END) as teachersTotal
             FROM gibbonCourseClass
             LEFT JOIN gibbonCourseClassPerson ON (gibbonCourseClassPerson.gibbonCourseClassID=gibbonCourseClass.gibbonCourseClassID AND (gibbonCourseClassPerson.role='Student' OR gibbonCourseClassPerson.role='Teacher'))
             LEFT JOIN gibbonPerson ON (gibbonCourseClassPerson.gibbonPersonID=gibbonPerson.gibbonPersonID AND (gibbonPerson.status='Full' OR gibbonPerson.status='Expected'))
@@ -228,13 +228,6 @@ class CourseGateway extends QueryableGateway
                 AND (role='Coordinator' OR role='Assistant Coordinator' OR role='Teacher (Curriculum)')
                 AND gibbonCourseClass.gibbonCourseClassID=:gibbonCourseClassID
                 ORDER BY gibbonCourse.nameShort";
-
-        return $this->db()->select($sql, $data);
-    }
-
-    public function selectColumnsByCourseClassID($gibbonCourseClassID) {
-        $data = array('gibbonCourseClassID' => $gibbonCourseClassID);
-        $sql = "SELECT gibbonDaysOfWeek.gibbonDaysOfWeekID, gibbonDaysOfWeek.name, gibbonDaysOfWeek.nameShort,gibbonDaysOfWeek.schoolDay, gibbonDaysOfWeek.sequenceNumber, gibbonclasscolumn.gibbonClassColumnID, gibbonclasscolumn.gibbonCourseClassID ,COUNT(gibbonClassColumnRow.gibbonClassColumnRowID) as rowCount FROM gibbonDaysOfWeek LEFT JOIN (SELECT * FROM gibbonclasscolumn WHERE gibbonclasscolumn.gibbonCourseClassID=:gibbonCourseClassID) AS gibbonclasscolumn ON (gibbonDaysOfWeek.gibbonDaysOfWeekID=gibbonclasscolumn.gibbonDaysOfWeekID) LEFT JOIN gibbonClassColumnRow ON gibbonclasscolumn.gibbonClassColumnID=gibbonClassColumnRow.gibbonClassColumnID GROUP BY gibbonDaysOfWeek.gibbonDaysOfWeekID, gibbonClassColumnRow.gibbonClassColumnID ORDER BY gibbonDaysOfWeek.sequenceNumber ASC";
 
         return $this->db()->select($sql, $data);
     }
