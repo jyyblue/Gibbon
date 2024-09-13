@@ -6,7 +6,7 @@
     --w-schedule-color-1-h: 27;
     --w-schedule-color-1-s: 87%;
     --w-schedule-color-1-l: 70%;
-    --w-schedule-color-1: hsl(var(--w-schedule-color-1-h), var(--w-schedule-color-1-s), var(--w-schedule-color-1-l));
+    --w-schedule-color-1: #96beea;
     --w-schedule-color-2-h: 187;
     --w-schedule-color-2-s: 13%;
     --w-schedule-color-2-l: 28%;
@@ -266,9 +266,11 @@ menu {
 #tt2 ul {
     margin: 0px !important;
 }
+
 #tt2 li {
     padding: 0px !important;
 }
+
 /** mobile tab */
 .w-schedule__control-wrapper {
     flex-grow: 1;
@@ -382,7 +384,8 @@ menu {
     border-left-width: 4px;
     border-left-style: solid;
     box-shadow: var(--shadow-sm);
-    transition: .3s
+    transition: .3s;
+    box-shadow: 1px 0px 3px 1px #6e736f;
 }
 
 .w-schedule__event:hover {
@@ -423,6 +426,7 @@ menu {
 }
 
 @media (min-width: 769px) {
+
     /* mobile tab */
     .w-schedule__controls {
         display: none;
@@ -488,7 +492,7 @@ menu {
 
     .w-schedule__event {
         height: var(--w-schedule-event-height, auto);
-        padding: var(--space-xs);
+        padding: 5px;
         position: absolute;
         left: 0;
         top: var(--w-schedule-event-top, initial);
@@ -525,4 +529,8 @@ menu {
         left: 0;
         font-size: var(--text-sm)
     }
+}
+
+.ttToday {
+    background: #fefedd8a !important;
 }

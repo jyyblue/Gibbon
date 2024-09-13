@@ -49,7 +49,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Timetable/tt.php') == fals
         $ttDate = Format::timestamp(Format::dateConvert($_POST['ttDate']));
     }
 
-    $tt = renderTT($guid, $connection2, $session->get('gibbonPersonID'), $id, false, $ttDate, '', '', 'trim');
+    $tt = renderTT2($guid, $connection2, $session->get('gibbonPersonID'), $id, false, $ttDate, '', '', 'trim');
     if ($tt != false) {
         $output .= $tt;
     } else {

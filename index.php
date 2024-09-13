@@ -326,8 +326,8 @@ $page->scripts->addMultiple([
     'jquery-time'    => 'lib/jquery-timepicker/jquery.timepicker.min.js',
     'jquery-chained' => 'lib/chained/jquery.chained.min.js',
     'core'           => 'resources/assets/js/core.min.js',
-    'timetable-util'           => 'resources/assets/timetable/util.js',
-    'timetable-weekly'           => 'resources/assets/timetable/weekly-schedule.min.js',
+    // 'timetable-util'           => 'resources/assets/timetable/util.js',
+    // 'timetable-weekly'           => 'resources/assets/timetable/weekly-schedule.min.js',
 
 ], ['context' => 'head']);
 
