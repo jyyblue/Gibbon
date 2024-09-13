@@ -21,6 +21,8 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 use Gibbon\Forms\CustomFieldHandler;
 use Gibbon\Data\Validator;
+use Gibbon\Domain\Timetable\CourseClassGateway;
+use Gibbon\Domain\Timetable\CourseClassSlotGateway;
 
 require_once '../../gibbon.php';
 
@@ -102,6 +104,49 @@ if ($gibbonCourseID == '' or $gibbonSchoolYearID == '') { echo 'Fatal error load
                             $sql = 'UPDATE gibbonCourseClass SET name=:name, nameShort=:nameShort, reportable=:reportable, attendance=:attendance, enrolmentMin=:enrolmentMin, enrolmentMax=:enrolmentMax, fields=:fields WHERE gibbonCourseClassID=:gibbonCourseClassID';
                             $result = $connection2->prepare($sql);
                             $result->execute($data);
+
+
+                            $ccSlotGateway = $container->get(CourseClassSlotGateway::class);
+                            $ccSlots = [];
+
+                            $timeSlotOrder = $_POST['order'] ?? [];
+                            foreach ($timeSlotOrder as $order) {
+                                $slot = $_POST['timeSlots'][$order];
+
+                                if (empty($slot['gibbonDaysOfWeekID']) || empty($slot['timeStart']) || empty('timeEnd')) {
+                                    continue;
+                                }
+
+                                //If start is after end, swap times.
+                                if ($slot['timeStart'] > $slot['timeEnd']) {
+                                    $temp = $slot['timeStart'];
+                                    $slot['timeStart'] = $slot['timeEnd'];
+                                    $slot['timeEnd'] = $temp;
+                                }
+
+                                $slot['gibbonCourseClassID'] = $gibbonCourseClassID;
+
+                                $type = $slot['location'] ?? 'Internal';
+                                if ($type == 'Internal') {
+                                    $slot['locationExternal'] = '';
+                                } else {
+                                    $slot['gibbonSpaceID'] = null;
+                                }
+
+                                unset($slot['location']);
+
+                                if (!empty($slot['gibbonCourseClassSlotID'])) {
+                                    $gibbonCourseClassSlotID = $slot['gibbonCourseClassSlotID'];
+                                    $ccSlotGateway->update($gibbonCourseClassSlotID, $slot);
+                                } else {
+                                    $gibbonCourseClassSlotID = $ccSlotGateway->insert($slot);
+                                }
+
+                                $ccSlots[] = str_pad($gibbonCourseClassSlotID, 10, 0, STR_PAD_LEFT);
+                            }
+
+                            $ccSlotGateway->deleteActivitySlotsNotInList($gibbonCourseClassID, $ccSlots);
+
                         } catch (PDOException $e) {
                             $URL .= '&return=error2';
                             header("Location: {$URL}");

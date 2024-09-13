@@ -1115,6 +1115,63 @@ function renderTT($guid, $connection2, $gibbonPersonID, $gibbonTTID, $title = ''
         }
     }
 
+    $render2 = renderTT2();
+    $output .= $render2;
+  $timetableJS = "<script>".
+    "var wSchedule = document.getElementsByClassName('js-w-schedule')[0];".
+    "if(wSchedule != undefined) {".
+    "new WSchedule({".
+      "element: wSchedule,".
+      "searchData: function (trigger, cb) {".
+      "}".
+    "});".
+    "}" .
+  "</script>";
+    return $output.$timetableJS;
+}
+
+function renderTT2() {
+    $output = '<div id="tt2">';
+    $output .= '<div class="w-schedule js-tabs js-w-schedule" data-hide-panel-class="display@md" data-w-schedule-timeline="8:00-20:00">';
+    
+    // mobile tab
+    $output .= '<ul class="w-schedule__controls js-tabs__controls" aria-label="Select day">';
+    // date loop    
+    $output .= '<li class="w-schedule__control-wrapper">';
+    $output .= '<a class="w-schedule__control" href="#w-schedule-mon" aria-selected="true">';
+    $output .= '<div class="text-xs opacity-50% text-uppercase letter-spacing-md margin-bottom-2xs">Mon</div>';
+    $output .= '<div class="text-lg font-medium line-height-1">11</div>';
+    $output .= '</a>';
+    $output .= '</li>';
+
+    $output .= '</ul>';
+
+    // main schedule
+    $output .= '<div class="w-schedule__days js-tabs__panels">';
+
+    // day section
+    $output .= '<section id="w-schedule-mon" class="w-schedule__day js-tabs__panel">';
+    // day of week
+    $output .= '<div class="w-schedule__col-label text-sm">Monday</div>';
+    $output .= '<ul class="w-schedule__events">';
+    // timeslot
+    $output .= '<li class="w-schedule__event-wrapper">';
+    $output .= '<div class="w-schedule__event w-schedule__event--1 js-w-schedule__event">';
+    $output .= '<time class="text-sm opacity-60% text-xs@md" datetime="09:00PT1H"></time>';
+    $output .= '<div class="text-md font-medium text-base@md">Abs Circuit</div>';
+    $output .= '</div>';
+    $output .= '</li>';
+
+    $output .= '</ul>';
+    $output .= '</section>';
+
+    $output .= '</div>';
+
+    // time grid
+    $output .= '<div class="w-schedule__grid js-w-schedule__grid" aria-hidden="true"></div>';
+    $output .= '</div>';
+    $output .= '</div>';
+
     return $output;
 }
 

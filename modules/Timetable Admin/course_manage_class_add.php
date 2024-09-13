@@ -135,13 +135,6 @@ if (isActionAccessible($guid, $connection2, '/modules/Timetable Admin/course_man
 
             $row = $slotBlock->addRow();
             $row->addLabel('location', __('Location'));
-            $row->addRadio('location')
-                ->inline()
-                ->alignLeft()
-                ->fromArray([
-                    'Internal' => __('Internal'),
-                    'External' => __('External')
-                ]);
 
             $row = $slotBlock->addRow()->addClass('hideShow');
             $row->addSelectSpace('gibbonSpaceID')

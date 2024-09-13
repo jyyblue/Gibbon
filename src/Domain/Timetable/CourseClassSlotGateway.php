@@ -35,8 +35,18 @@ class CourseClassSlotGateway extends QueryableGateway
 {
     use TableAware;
 
-    private static $tableName = 'gibbonCourseClassSlot';
+    private static $tableName = 'gibboncourseclassslot';
     private static $primaryKey = 'gibbonCourseClassSlotID';
 
     private static $searchableColumns = [];
+
+    public function deleteActivitySlotsNotInList($gibbonCourseClassID, $gibbonCourseClassSlotIDList)
+    {
+        $gibbonCourseClassSlotIDList = is_array($gibbonCourseClassSlotIDList) ? implode(',', $gibbonCourseClassSlotIDList) : $gibbonCourseClassSlotIDList;
+
+        $data = ['gibbonCourseClassID' => $gibbonCourseClassID, 'gibbonCourseClassSlotIDList' => $gibbonCourseClassSlotIDList];
+        $sql = "DELETE FROM gibbonCourseClassSlot WHERE gibbonCourseClassID=:gibbonCourseClassID AND NOT FIND_IN_SET(gibbonCourseClassSlotID, :gibbonCourseClassSlotIDList)";
+
+        return $this->db()->delete($sql, $data);
+    }
 }
