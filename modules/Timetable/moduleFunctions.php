@@ -1108,7 +1108,6 @@ function renderTT($guid, $connection2, $gibbonPersonID, $gibbonTTID, $title = ''
     }
 
     $render2 = renderTT2($guid, $connection2, $gibbonPersonID, $gibbonTTID, $title = '', $startDayStamp = '', $q = '', $params = '', $narrow = 'full', $edit = false);
-    $output = $startDayStamp.$render2;
     $timetableJS = "<script>" .
         "(function () {" .
         "console.log('333333333');" .
@@ -1206,7 +1205,13 @@ function renderTT2($guid, $connection2, $gibbonPersonID, $gibbonTTID, $title = '
         //Find out which timetables I am involved in this year
         try {
             $data = array('gibbonSchoolYearID' => $session->get('gibbonSchoolYearID'), 'gibbonPersonID' => $gibbonPersonID);
-            $sql = "SELECT DISTINCT gibbonTT.gibbonTTID, gibbonTT.name, gibbonTT.nameShortDisplay FROM gibbonTT JOIN gibbonTTDay ON (gibbonTT.gibbonTTID=gibbonTTDay.gibbonTTID) JOIN gibbonTTDayRowClass ON (gibbonTTDayRowClass.gibbonTTDayID=gibbonTTDay.gibbonTTDayID) JOIN gibbonCourseClass ON (gibbonTTDayRowClass.gibbonCourseClassID=gibbonCourseClass.gibbonCourseClassID) JOIN gibbonCourseClassPerson ON (gibbonCourseClassPerson.gibbonCourseClassID=gibbonCourseClass.gibbonCourseClassID) WHERE gibbonPersonID=:gibbonPersonID AND gibbonSchoolYearID=:gibbonSchoolYearID AND active='Y' ";
+            $sql = "SELECT DISTINCT gibbonTT.gibbonTTID, gibbonTT.name, gibbonTT.nameShortDisplay 
+            FROM gibbonTT 
+            JOIN gibbonCourse ON (gibbonTT.gibbonSchoolYearID=gibbonCourse.gibbonSchoolYearID) 
+            JOIN gibbonCourseClass ON (gibbonCourseClass.gibbonCourseID=gibbonCourse.gibbonCourseID) 
+            JOIN gibbonCourseClassPerson ON (gibbonCourseClassPerson.gibbonCourseClassID=gibbonCourseClass.gibbonCourseClassID) 
+            WHERE gibbonPersonID=:gibbonPersonID AND gibbonTT.gibbonSchoolYearID=:gibbonSchoolYearID AND active='Y' ";
+
             $result = $connection2->prepare($sql);
             $result->execute($data);
         } catch (PDOException $e) {
@@ -1252,7 +1257,13 @@ function renderTT2($guid, $connection2, $gibbonPersonID, $gibbonTTID, $title = '
                     $sql = "SELECT gibbonTT.gibbonTTID, gibbonTT.name, gibbonTT.nameShortDisplay FROM gibbonTT WHERE gibbonTT.gibbonTTID=:gibbonTTID";
                 } else {
                     $data = array('gibbonSchoolYearID' => $session->get('gibbonSchoolYearID'), 'gibbonTTID' => $gibbonTTID, 'gibbonPersonID' => $gibbonPersonID);
-                    $sql = "SELECT DISTINCT gibbonTT.gibbonTTID, gibbonTT.name, gibbonTT.nameShortDisplay FROM gibbonTT JOIN gibbonTTDay ON (gibbonTT.gibbonTTID=gibbonTTDay.gibbonTTID) JOIN gibbonTTDayRowClass ON (gibbonTTDayRowClass.gibbonTTDayID=gibbonTTDay.gibbonTTDayID) JOIN gibbonCourseClass ON (gibbonTTDayRowClass.gibbonCourseClassID=gibbonCourseClass.gibbonCourseClassID) JOIN gibbonCourseClassPerson ON (gibbonCourseClassPerson.gibbonCourseClassID=gibbonCourseClass.gibbonCourseClassID) WHERE gibbonPersonID=:gibbonPersonID AND gibbonSchoolYearID=:gibbonSchoolYearID AND gibbonTT.gibbonTTID=:gibbonTTID";
+                    $sql = "SELECT DISTINCT gibbonTT.gibbonTTID, gibbonTT.name, gibbonTT.nameShortDisplay 
+                    FROM gibbonTT 
+                    JOIN gibbonCourse ON (gibbonTT.gibbonSchoolYearID=gibbonCourse.gibbonSchoolYearID) 
+                    JOIN gibbonCourseClass ON (gibbonCourseClass.gibbonCourseID=gibbonCourse.gibbonCourseID) 
+                    JOIN gibbonCourseClassPerson ON (gibbonCourseClassPerson.gibbonCourseClassID=gibbonCourseClass.gibbonCourseClassID) 
+                    WHERE gibbonPersonID=:gibbonPersonID AND gibbonTT.gibbonSchoolYearID=:gibbonSchoolYearID AND gibbonTT.gibbonTTID=:gibbonTTID";
+
                 }
                 $ttResult = $connection2->prepare($sql);
                 $ttResult->execute($data);
@@ -1603,16 +1614,32 @@ function renderTT2($guid, $connection2, $gibbonPersonID, $gibbonTTID, $title = '
 
             //Max diff time for week based on timetables
             try {
-                $dataDiff = array('date1' => date('Y-m-d', ($startDayStamp + (86400 * 0))), 'date2' => date('Y-m-d', ($endDayStamp + (86400 * 1))), 'gibbonTTID' => $row['gibbonTTID']);
-                $sqlDiff = 'SELECT DISTINCT gibbonTTColumn.gibbonTTColumnID FROM gibbonTTDay JOIN gibbonTTDayDate ON (gibbonTTDay.gibbonTTDayID=gibbonTTDayDate.gibbonTTDayID) JOIN gibbonTTColumn ON (gibbonTTDay.gibbonTTColumnID=gibbonTTColumn.gibbonTTColumnID) WHERE (date>=:date1 AND date<=:date2) AND gibbonTTID=:gibbonTTID';
+                // get start time over all course class timeslot.
+                $dataDiff = array('gibbonTTID' => $row['gibbonTTID'], 'gibbonPersonID'=> $gibbonPersonID);
+                $sqlDiff = 'SELECT DISTINCT gibbonCourseClass.gibbonCourseClassID 
+                FROM gibbonCourse 
+                JOIN gibbonTT ON gibbonTT.gibbonSchoolYearID=gibbonCourse.gibbonSchoolYearID  
+                JOIN gibbonCourseClass ON gibbonCourse.gibbonCourseID=gibbonCourseClass.gibbonCourseID 
+                JOIN gibbonCourseClassPerson ON (gibbonCourseClassPerson.gibbonCourseClassID=gibbonCourseClass.gibbonCourseClassID)
+                WHERE gibbonTT.gibbonTTID=:gibbonTTID AND gibbonCourseClassPerson.gibbonPersonID=:gibbonPersonID';
+
+                // $dataDiff = array('date1' => date('Y-m-d', ($startDayStamp + (86400 * 0))), 'date2' => date('Y-m-d', ($endDayStamp + (86400 * 1))), 'gibbonTTID' => $row['gibbonTTID']);
+                
+                // $sqlDiff = 'SELECT DISTINCT gibbonTTColumn.gibbonTTColumnID 
+                // FROM gibbonTTDay 
+                // JOIN gibbonTTDayDate ON (gibbonTTDay.gibbonTTDayID=gibbonTTDayDate.gibbonTTDayID) 
+                // JOIN gibbonTTColumn ON (gibbonTTDay.gibbonTTColumnID=gibbonTTColumn.gibbonTTColumnID) 
+                // WHERE (date>=:date1 AND date<=:date2) AND gibbonTTID=:gibbonTTID';
+
                 $resultDiff = $connection2->prepare($sqlDiff);
                 $resultDiff->execute($dataDiff);
             } catch (PDOException $e) {
             }
+            // 
             while ($rowDiff = $resultDiff->fetch()) {
                 try {
-                    $dataDiffDay = array('gibbonTTColumnID' => $rowDiff['gibbonTTColumnID']);
-                    $sqlDiffDay = 'SELECT * FROM gibbonTTColumnRow WHERE gibbonTTColumnID=:gibbonTTColumnID ORDER BY timeStart';
+                    $dataDiffDay = array('gibbonCourseClassID' => $rowDiff['gibbonCourseClassID']);
+                    $sqlDiffDay = 'SELECT * FROM gibbonCourseClassSlot WHERE gibbonCourseClassID=:gibbonCourseClassID ORDER BY timeStart';
                     $resultDiffDay = $connection2->prepare($sqlDiffDay);
                     $resultDiffDay->execute($dataDiffDay);
                 } catch (PDOException $e) {
@@ -1742,7 +1769,7 @@ function renderTT2($guid, $connection2, $gibbonPersonID, $gibbonTTID, $title = '
             // mobile tab
             $output .= '<ul class="w-schedule__controls js-tabs__controls" aria-label="Select day">';
             // date loop    
-            foreach ($days as $day) {
+            foreach ($days as $index => $day) {
                 if ($day['schoolDay'] == 'Y') {
                     if ($count == 0) {
                         $firstSequence = $day['sequenceNumber'];
@@ -1767,15 +1794,15 @@ function renderTT2($guid, $connection2, $gibbonPersonID, $gibbonTTID, $title = '
                     }
 
                     $today = ((date($session->get('i18n')['dateFormatPHP'], ($startDayStamp + (86400 * $dateCorrection))) == date($session->get('i18n')['dateFormatPHP'])) ? "ttToday" : '');
-                    $tabSelected = 'false';
+                    $tabSelected = '';
                     if ($today == 'ttToday') {
-                        $tabSelected = 'false';
+                        $tabSelected = "aria-selected='true'";
                     }else{
-                        $tabSelected = 'false';
+                        $tabSelected = '';
                     }
                     
                     $output .= "<li class='w-schedule__control-wrapper $today'>";
-                    $output .= "<a class='w-schedule__control' href='#w-schedule-" . strtolower(date('D', ($startDayStamp + (86400 * $dateCorrection)))) . "' aria-selected='$tabSelected' >";
+                    $output .= "<a class='w-schedule__control' href='#w-schedule-" . strtolower(date('D', ($startDayStamp + (86400 * $dateCorrection)))) . "' " . $tabSelected .">";
 
                     if ($nameShortDisplay != 'Timetable Day Short Name') {
                         $tabTitle = __($day['nameShort']) . '<br/>';
@@ -1938,6 +1965,7 @@ function renderTT2($guid, $connection2, $gibbonPersonID, $gibbonTTID, $title = '
     $timetableJS .= '<script type="text/javascript" src="/resources/assets/timetable/weekly-schedule.min.js"></script>';
     return $output . $timetableJS;
 }
+
 function renderTTDay2($guid, $connection2, $gibbonTTID, $schoolOpen, $startDayStamp, $count, $daysInWeek, $gibbonPersonID, $gridTimeStart, $eventsSchool, $eventsPersonal, $eventsSpaceBooking, $activities, $staffDuty, $staffCoverage, $diffTime, $maxAllDays, $narrow, $specialDayStart = '', $specialDayEnd = '', $specialDay = [], $roleCategory = '', $edit = false)
 {
     global $session;
@@ -2184,12 +2212,10 @@ function renderTTDay2($guid, $connection2, $gibbonTTID, $schoolOpen, $startDaySt
         $startPad = strtotime($dayTimeStart) - strtotime($gridTimeStart);
 
         $today = ((date($session->get('i18n')['dateFormatPHP'], ($startDayStamp + (86400 * $count))) == date($session->get('i18n')['dateFormatPHP'])) ? "class='ttToday'" : '');
-        // $output .= "<td $today style='text-align: center; vertical-align: top; font-size: 11px'>";
 
         if ($resultDay->rowCount() == 1) {
             $rowDay = $resultDay->fetch();
             $zCount = 0;
-            // $output .= "<div style='position: relative'>";
 
             //Draw periods from TT
             try {
@@ -2496,7 +2522,7 @@ function renderTTDay2($guid, $connection2, $gibbonTTID, $schoolOpen, $startDaySt
                                 }
                                 //Add planner link icons for any one else's TT
                                 else {
-                                    $output .= "<div $title style='z-index: $zCount; position: absolute; top: $top; width:100%; min-width: $width ; border: 1px solid rgba(136,136,136, $ttAlpha); height: {$height}px; margin: 0px; padding: 0px; background-color: none; pointer-events: none'>";
+                                    $output .= "<div $title style='z-index: $zCount; position: absolute; top: 0; width:100%; ; height: 100%; margin: 0px; padding: 0px; background-color: none; pointer-events: none'>";
                                     //Check for lesson plan
                                     $bgImg = 'none';
 
@@ -2521,7 +2547,7 @@ function renderTTDay2($guid, $connection2, $gibbonTTID, $schoolOpen, $startDaySt
                             }
                             //Show exception editing
                             elseif ($edit) {
-                                $output .= "<div $title style='z-index: $zCount; position: absolute; top: $top; width:100%; min-width: $width ; border: 1px solid rgba(136,136,136, $ttAlpha); height: {$height}px; margin: 0px; padding: 0px; background-color: none; pointer-events: none'>";
+                                $output .= "<div $title style='z-index: $zCount; position: absolute; top: 0; width:100%; height: 100%; margin: 0px; padding: 0px; background-color: none; pointer-events: none'>";
                                 //Check for lesson plan
                                 $bgImg = 'none';
 

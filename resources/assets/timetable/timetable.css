@@ -504,7 +504,7 @@ menu {
     }
 }
 
-@media not all and (min-width: 64rem) {
+@media not all and (min-width: 769px) {
     .display\@md {
         display: none !important;
     }
