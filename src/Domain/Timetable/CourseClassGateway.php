@@ -51,11 +51,12 @@ class CourseClassGateway extends QueryableGateway
                 'gibbonCourse.gibbonYearGroupIDList',
                 'gibbonSpace.phoneInternal',
                 'gibbonPerson.gibbonPersonID',
+                'gibbonCourseClassSlot.gibbonCourseClassSlotID',
                 'gibbonCourseClassSlot.timeStart',
                 'gibbonCourseClassSlot.timeEnd',
                 'gibbonSpace.name AS roomName',
                 'gibbonDaysOfWeek.name as dayOfWeek',
-            // '(CASE WHEN gibbonStaffCoverage.gibbonPersonID=:gibbonPersonID THEN 1 ELSE 0 END) as coverageStatus'
+                // '(CASE WHEN gibbonStaffCoverage.gibbonPersonID=:gibbonPersonID THEN 1 ELSE 0 END) as coverageStatus'
             ])
             ->leftJoin('gibbonCourse', 'gibbonCourse.gibbonCourseID=gibbonCourseClass.gibbonCourseID')
             ->leftJoin('gibbonCourseClassSlot', 'gibbonCourseClassSlot.gibbonCourseClassID=gibbonCourseClass.gibbonCourseClassID')
@@ -70,7 +71,7 @@ class CourseClassGateway extends QueryableGateway
             ->where('gibbonDaysOfWeek.nameShort=:today')
             ->bindValue('today', $date)
             ->where("gibbonDaysOfWeek.schoolDay='Y'");
-            // ->bindValue('dateType', $dateType);
+        // ->bindValue('dateType', $dateType);
 
         return $this->runSelect($query);
     }

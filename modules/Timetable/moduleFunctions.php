@@ -340,7 +340,7 @@ function getCalendarEvents($connection2, $guid, $xml, $startDayStamp, $endDaySta
 
 //TIMETABLE FOR INDIVIUDAL
 //$narrow can be "full", "narrow", or "trim" (between narrow and full)
-function renderTT($guid, $connection2, $gibbonPersonID, $gibbonTTID, $title = '', $startDayStamp = '', $q = '', $params = '', $narrow = 'full', $edit = false)
+function renderTT_old($guid, $connection2, $gibbonPersonID, $gibbonTTID, $title = '', $startDayStamp = '', $q = '', $params = '', $narrow = 'full', $edit = false)
 {
     global $session, $container;
 
@@ -1129,7 +1129,7 @@ function renderTT($guid, $connection2, $gibbonPersonID, $gibbonTTID, $title = ''
     return $output . $timetableJS;
 }
 
-function renderTT_new($guid, $connection2, $gibbonPersonID, $gibbonTTID, $title = '', $startDayStamp = '', $q = '', $params = '', $narrow = 'full', $edit = false)
+function renderTT($guid, $connection2, $gibbonPersonID, $gibbonTTID, $title = '', $startDayStamp = '', $q = '', $params = '', $narrow = 'full', $edit = false)
 {
     global $session, $container;
 
@@ -2619,14 +2619,14 @@ function renderTTDay($guid, $connection2, $gibbonTTID, $schoolOpen, $startDaySta
                         }
 
                         //Check for an exception for the current user
-                        // try {
-                        //     $dataException = array('gibbonPersonID' => $gibbonPersonID, 'gibbonTTDayRowClassID' => $rowPeriods['gibbonTTDayRowClassID']);
-                        //     $sqlException = 'SELECT * FROM gibbonTTDayRowClassException WHERE gibbonTTDayRowClassID=:gibbonTTDayRowClassID AND gibbonPersonID=:gibbonPersonID';
-                        //     $resultException = $connection2->prepare($sqlException);
-                        //     $resultException->execute($dataException);
-                        // } catch (PDOException $e) {
-                        // }
-                        $noException = true; // $resultException->rowCount() < 1;
+                        try {
+                            $dataException = array('gibbonPersonID' => $gibbonPersonID, 'gibbonCourseClassSlotID' => $rowPeriods['gibbonCourseClassSlotID']);
+                            $sqlException = 'SELECT * FROM gibbonCourseClassSlotException WHERE gibbonCourseClassSlotID=:gibbonCourseClassSlotID AND gibbonPersonID=:gibbonPersonID';
+                            $resultException = $connection2->prepare($sqlException);
+                            $resultException->execute($dataException);
+                        } catch (PDOException $e) {
+                        }
+                        $noException = $resultException->rowCount() < 1;
                         if ( $noException || $isCovering) {
                             $className = !empty($rowPeriods['gibbonCourseClassID']) ? $rowPeriods['course'] . '.' . $rowPeriods['class'] : ($rowPeriods['contextName'] ?? '');
 
