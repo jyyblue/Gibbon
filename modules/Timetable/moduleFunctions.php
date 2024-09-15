@@ -2824,17 +2824,28 @@ function renderTTDay($guid, $connection2, $gibbonTTID, $schoolOpen, $startDaySta
                         $label = $event[1];
                         $title = "title='" . substr($event[4], 0, 5) . ' - ' . substr($event[5], 0, 5) . ' ' . $event[6] . "'";
                     } else {
-                        $label = $event[1] . "<br/><span style='font-weight: normal'>" . substr($event[4], 0, 5) . ' - ' . substr($event[5], 0, 5) . '<br/>' . $event[6] . '</span>';
+                        $label = $event[1] . "<br/><span style='font-weight: normal'>" . $event[6] . '</span>';
                         $title = '';
                     }
 
                     if ($height > 56) {
                         $label .= '<br/>' . Format::small(Format::truncate($event[7], 60));
                     }
-
-                    $output .= "<div class='ttSpaceBookingCalendar' $title style='z-index: $zCount; position: absolute; top: $top; width:100%; min-width: $width ; border: 1px solid rgb(136, 136, 136); height: {$height}px; margin: 0px; padding: 0px; opacity: $schoolCalendarAlpha'>";
+                    
+                    $title = "title='" . substr($event[4], 0, 5) . ' - ' . substr($event[5], 0, 5) . ' ' . $event[6] . "'";
+                    $output .= "<li class='w-schedule__event-wrapper' style='z-index: $zCount;'>";
+                    $output .= "<div class='w-schedule__event js-w-schedule__event ttSchoolCalendar' $title style=' opacity: $schoolCalendarAlpha'>";
+                    $output .= "<div style='position: relative; height: 100%; overflow:auto;'>";
+                    $dt = getTimeStr(date('H:i:s', $event[2]), date('H:i:s', $event[3]));
+                    $output .= "<time class='text-sm opacity-60% text-xs@md' datetime='" . $dt . "'></time><br/>";
                     $output .= $label;
                     $output .= '</div>';
+                    $output .= '</div>';
+                    $output .= '</li>';
+
+                    // $output .= "<div class='ttSpaceBookingCalendar' $title style='z-index: $zCount; position: absolute; top: $top; width:100%; min-width: $width ; border: 1px solid rgb(136, 136, 136); height: {$height}px; margin: 0px; padding: 0px; opacity: $schoolCalendarAlpha'>";
+                    // $output .= $label;
+                    // $output .= '</div>';
                     ++$zCount;
                 }
             }
