@@ -1442,6 +1442,7 @@ function renderTT2($guid, $connection2, $gibbonPersonID, $gibbonTTID, $title = '
             $dateType = $container->get(SettingGateway::class)->getSettingByScope('Activities', 'dateType');
             $activityList = $activityGateway->selectActiveEnrolledActivities($session->get('gibbonSchoolYearID'), $gibbonPersonID, $dateType, date('Y-m-d', $startDayStamp))->fetchAll();
 
+            $test = '';
             foreach ($dateRange as $dateObject) {
                 $date = $dateObject->format('Y-m-d');
                 $weekday = $dateObject->format('l');
@@ -1451,6 +1452,7 @@ function renderTT2($guid, $connection2, $gibbonPersonID, $gibbonTTID, $title = '
                     if ($date < $activity['dateStart'] || $date > $activity['dateEnd']) continue;
 
                     if (isSchoolOpen($guid, $date, $connection2)) {
+                        $test .= $activity['name'];
                         $activities[] = [
                             0 => $activity['name'],
                             1 => '',
@@ -1948,7 +1950,6 @@ function renderTT2($guid, $connection2, $gibbonPersonID, $gibbonTTID, $title = '
     
     $timetableJS = "<script>" .
     "(function () {" .
-    "console.log('333333333');" .
     "var wSchedule = document.getElementsByClassName('js-w-schedule')[0];" .
     "if(wSchedule != undefined) {" .
     "setTimeout(() => {" .
@@ -1986,7 +1987,11 @@ function renderTTDay2($guid, $connection2, $gibbonTTID, $schoolOpen, $startDaySt
 
     try {
         $dataDay = array('gibbonTTID' => $gibbonTTID, 'date' => date('Y-m-d', ($startDayStamp + (86400 * $count))));
-        $sqlDay = 'SELECT gibbonTTDay.gibbonTTDayID FROM gibbonTTDayDate JOIN gibbonTTDay ON (gibbonTTDayDate.gibbonTTDayID=gibbonTTDay.gibbonTTDayID) WHERE gibbonTTID=:gibbonTTID AND date=:date';
+        $sqlDay = 'SELECT gibbonTTDay.gibbonTTDayID 
+        FROM gibbonTTDayDate 
+        JOIN gibbonTTDay ON (gibbonTTDayDate.gibbonTTDayID=gibbonTTDay.gibbonTTDayID) 
+        WHERE gibbonTTID=:gibbonTTID AND date=:date';
+
         $resultDay = $connection2->prepare($sqlDay);
         $resultDay->execute($dataDay);
     } catch (PDOException $e) {
@@ -2565,7 +2570,7 @@ function renderTTDay2($guid, $connection2, $gibbonTTID, $schoolOpen, $startDaySt
                 }
             }
             }
-            if(false){
+            if(true){
             //Draw activities
             if (!empty($activities)) {
                 $height = 0;
@@ -2594,13 +2599,21 @@ function renderTTDay2($guid, $connection2, $gibbonTTID, $schoolOpen, $startDaySt
                             $bg = 'background: #dfcbf6 !important;';
                         }
                         $top = (ceil(($event[2] - strtotime(date('Y-m-d', $startDayStamp + (86400 * $count)) . ' ' . $gridTimeStart)) / 60)) . 'px';
-                        $output .= "<div class='{$class}' $title style='z-index: $zCount; position: absolute; top: $top; width: 100%; min-width: $width ; border: 1px solid rgb(136, 136, 136); height: {$height}px; margin: 0px; padding: 0px; {$bg}'>";
-                        if ($height >= 26) {
+
+                            $output .= "<li class='w-schedule__event-wrapper' style='z-index: $zCount;'>";
+                            $output .= "<div class='w-schedule__event js-w-schedule__event' $title style=' font-size: $fontSize; $bg'>";
+                            $output .= "<div style='position: relative; height: 100%;'>";
                             $output .= __('Activity') . '<br/>';
-                        }
-                        if ($height >= 40) {
-                            $output .= '<i>' . date('H:i', $event[2]) . ' - ' . date('H:i', $event[3]) . '</i><br/>';
-                        }
+                            $dt = getTimeStr( date('H:i:s', $event[2]), date('H:i:s', $event[3]));
+                            $output .= "<time class='text-sm opacity-60% text-xs@md' datetime='" . $dt . "'></time><br/>";
+
+                        // $output .= "<div class='{$class}' $title style='z-index: $zCount; position: absolute; top: $top; width: 100%; min-width: $width ; border: 1px solid rgb(136, 136, 136); height: {$height}px; margin: 0px; padding: 0px; {$bg}'>";
+                        // if ($height >= 26) {
+                        //     $output .= __('Activity') . '<br/>';
+                        // }
+                        // if ($height >= 40) {
+                        //     $output .= '<i>' . date('H:i', $event[2]) . ' - ' . date('H:i', $event[3]) . '</i><br/>';
+                        // }
 
                         $output .= "<a style='text-decoration: none; font-weight: bold; ' href='" . $event[5] . "'>" . $label . '</a><br/>';
 
@@ -2609,7 +2622,10 @@ function renderTTDay2($guid, $connection2, $gibbonTTID, $schoolOpen, $startDaySt
                         } elseif (($height >= 55 && $charCut <= 20) || ($height >= 68 && $charCut >= 40)) {
                             $output .= $event[4] . '<br/>';
                         }
+
                         $output .= '</div>';
+                        $output .= '</div>';
+                            $output .= '</li>';
                     }
                     ++$zCount;
                 }
@@ -2803,7 +2819,7 @@ function getTimeStr($start, $end) {
     // diff second
     $diff = strtotime($e) - strtotime($s);
     // hour
-    $hour = $diff/3600;
+    $hour = floor($diff/3600);
     $min = ($diff%3600) / 60;
     $ret = '';
     if($hour > 0) {
