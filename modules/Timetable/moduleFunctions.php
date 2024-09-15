@@ -2749,11 +2749,25 @@ function renderTTDay($guid, $connection2, $gibbonTTID, $schoolOpen, $startDaySta
                                 }
                                 $height = 30;
                                 $top = (($maxAllDays * -31) - 8 + ($allDay * 30)) . 'px';
-                                $output .= "<div class='ttPersonalCalendar' $title style='z-index: $zCount; position: absolute; top: $top; width: 100%; min-width: $width ; border: 1px solid rgb(136, 136, 136); height: {$height}px; margin: 0px; padding: 0px; opacity: $schoolCalendarAlpha'>";
+
+                                $output .= "<li class='w-schedule__event-wrapper' style='z-index: $zCount;'>";
+                                $output .= "<div class='w-schedule__event js-w-schedule__event ttSchoolCalendar' $title style=' opacity: $schoolCalendarAlpha'>";
+                                $output .= "<div style='position: relative; height: 100%; overflow:auto;'>";
+                                $dt = getTimeStr($gridTimeStart, date('H:i:s', strtotime(date('Y-m-d ') . $gridTimeStart) + 3600));
+                                $output .= "<time class='text-sm opacity-60% text-xs@md' datetime='" . $dt . "'></time><br/>";
                                 $output .= !empty($event[5])
                                     ? "<a target=_blank style='color: #fff' href='" . $event[5] . "'>" . $label . '</a>'
                                     : $label;
                                 $output .= '</div>';
+                                $output .= '</div>';
+                                $output .= '</li>';
+
+
+                                // $output .= "<div class='ttPersonalCalendar' $title style='z-index: $zCount; position: absolute; top: $top; width: 100%; min-width: $width ; border: 1px solid rgb(136, 136, 136); height: {$height}px; margin: 0px; padding: 0px; opacity: $schoolCalendarAlpha'>";
+                                // $output .= !empty($event[5])
+                                //     ? "<a target=_blank style='color: #fff' href='" . $event[5] . "'>" . $label . '</a>'
+                                //     : $label;
+                                // $output .= '</div>';
                                 ++$allDay;
                             } else {
                                 $label = $event[0];
@@ -2768,11 +2782,23 @@ function renderTTDay($guid, $connection2, $gibbonTTID, $schoolOpen, $startDaySta
                                     $title = "title='" . htmlPrep($event[0]) . ' (' . date('H:i', $event[2]) . ' to ' . date('H:i', $event[3]) . ")'";
                                 }
                                 $top = (ceil(($event[2] - strtotime(date('Y-m-d', $startDayStamp + (86400 * $count)) . ' ' . $gridTimeStart)) / 60)) . 'px';
-                                $output .= "<div class='ttPersonalCalendar' $title style='z-index: $zCount; position: absolute; top: $top; width: 100%; min-width: $width ; border: 1px solid rgb(136, 136, 136); height: {$height}px; margin: 0px; padding: 0px; opacity: $schoolCalendarAlpha'>";
+                                // $output .= "<div class='ttPersonalCalendar' $title style='z-index: $zCount; position: absolute; top: $top; width: 100%; min-width: $width ; border: 1px solid rgb(136, 136, 136); height: {$height}px; margin: 0px; padding: 0px; opacity: $schoolCalendarAlpha'>";
+                                // $output .= !empty($event[5])
+                                //     ? "<a target=_blank style='color: #fff' href='" . $event[5] . "'>" . $label . '</a>'
+                                //     : $label;
+                                // $output .= '</div>';
+
+                                $output .= "<li class='w-schedule__event-wrapper' style='z-index: $zCount;'>";
+                                $output .= "<div class='w-schedule__event js-w-schedule__event ttSchoolCalendar' $title style=' opacity: $schoolCalendarAlpha'>";
+                                $output .= "<div style='position: relative; height: 100%; overflow:auto;'>";
+                                $dt = getTimeStr(date('H:i:s', $event[2]), date('H:i:s', $event[3]));
+                                $output .= "<time class='text-sm opacity-60% text-xs@md' datetime='" . $dt . "'></time><br/>";
                                 $output .= !empty($event[5])
                                     ? "<a target=_blank style='color: #fff' href='" . $event[5] . "'>" . $label . '</a>'
                                     : $label;
                                 $output .= '</div>';
+                                $output .= '</div>';
+                                $output .= '</li>';
                             }
                             ++$zCount;
                         }
