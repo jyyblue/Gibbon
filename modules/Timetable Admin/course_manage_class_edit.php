@@ -114,6 +114,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Timetable Admin/course_man
             $sqlWeekdays = "SELECT gibbonDaysOfWeekID as value, name FROM gibbonDaysOfWeek ORDER BY sequenceNumber";
 
             $slotBlock = $form->getFactory()->createTable()->setClass('blank');
+            
             $row = $slotBlock->addRow();
             $row->addLabel('gibbonDaysOfWeekID', __('Slot Day'));
             $row->addSelect('gibbonDaysOfWeekID')
@@ -132,13 +133,6 @@ if (isActionAccessible($guid, $connection2, '/modules/Timetable Admin/course_man
 
             $row = $slotBlock->addRow();
             $row->addLabel('location', __('Location'));
-            // $row->addRadio('location')
-            //     ->inline()
-            //     ->alignLeft()
-            //     ->fromArray([
-            //         'Internal' => __('Internal'),
-            //         'External' => __('External')
-            //     ]);
 
             $row = $slotBlock->addRow()->addClass('hideShow');
             $row->addSelectSpace('gibbonSpaceID')
@@ -150,6 +144,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Timetable Admin/course_man
                 ->maxLength(50)
                 ->addClass('sm:max-w-full w-full');
 
+            
             //Tool Button
             $addBlockButton = $form->getFactory()
                 ->createButton(__('Add Time Slot'))
@@ -164,7 +159,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Timetable Admin/course_man
                     'sortable' => true,
                 ])
                 ->addToolInput($addBlockButton);
-
+            
             $slotBlocks->addPredefinedBlock("Add Time Slot", ['location' => 'Internal']);
             $ccSlotGateway = $container->get(CourseClassSlotGateway::class);
             $timeSlots = $ccSlotGateway->selectBy(['gibbonCourseClassID' => $gibbonCourseClassID]);

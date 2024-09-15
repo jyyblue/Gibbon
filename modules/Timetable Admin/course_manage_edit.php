@@ -193,6 +193,9 @@ if (isActionAccessible($guid, $connection2, '/modules/Timetable Admin/course_man
                     $actions->addAction('enrolment', __('Enrolment'))
                         ->setIcon('attendance')
                         ->setURL('/modules/Timetable Admin/courseEnrolment_manage_class_edit.php');
+                    $actions->addAction('exception', __('Exception'))
+                        ->setIcon('exception')
+                        ->setURL('/modules/Timetable Admin/courseException_manage_class_edit.php');
                 });
 
             echo $table->render($classes->toDataSet());
