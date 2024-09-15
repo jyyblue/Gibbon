@@ -1766,7 +1766,7 @@ function renderTT2($guid, $connection2, $gibbonPersonID, $gibbonTTID, $title = '
 
             // from here custom timetable start.
             $output .= '<div id="tt2">';
-            $output .= "<div class='w-schedule js-tabs js-w-schedule' data-hide-panel-class='display@md' data-w-schedule-timeline='" . substr($timeStart, 0, 5) . "-" . substr($timeEnd, 0, 5) . "'>";
+            $output .= "<div class='w-schedule js-tabs js-w-schedule' data-hide-panel-class='display@md' data-w-schedule-timeline='" . substr($timeStart, 0, 3)."00" . "-" . substr($timeEnd, 0, 5). "'>";
 
             // mobile tab
             $output .= '<ul class="w-schedule__controls js-tabs__controls" aria-label="Select day">';
